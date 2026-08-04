@@ -1,0 +1,17 @@
+{% extends "bootstrap/base.html" %} {% block head %} {{ super() }} {% endblock
+%} {% block title %}리뷰 앱{% endblock %} {% block content %}
+<main class="container">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+  </div>
+  {% endfor %} {% block page_content %}{% endblock %}
+</main>
+<footer>
+  <p>현재 시각은 {{ moment(current_time).format('LLL') }}.</p>
+  <p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
+</footer>
+
+{% endblock %} {% block scripts %} {{ super() }} {{ moment.include_moment() }}
+{% endblock %}
