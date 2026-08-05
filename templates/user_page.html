@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% import "bootstrap/wtf.html" as wtf %} {% block head
+%}
+<meta name="description" content="form_page를 만들어봅시다." />
+{% endblock %} {% block title %}user_page{% endblock %} {% block page_content %}
+<header>
+  <div class="header">
+    <h1>리뷰앱</h1>
+    <h2>{{ name }}님 환영합니다.!</h2>
+  </div>
+</header>
+{{ wtf.quick_form(review) }} {% endblock %}

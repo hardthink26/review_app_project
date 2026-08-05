@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment 
 from datetime import datetime 
 from flask_wtf import FlaskForm 
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, DateField, SelectField
 from wtforms.validators import DataRequired
 import os 
 from flask_sqlalchemy import SQLAlchemy
@@ -24,6 +24,14 @@ migrate = Migrate(app, db)
 
 class NameForm(FlaskForm):
     name = StringField('What is your name?', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class ReviewForm(FlaskForm):
+    problem = StringField('문제 이름을 적어주세요', validators=[DataRequired()])
+    date = DateField('푼 날짜', format='%Y-%m-%d')
+    importance = SelectField("중요도", choices = [('1', '*'), ('2', '**'), ('3', '***')], coerce=int)
+    
+
     submit = SubmitField('Submit')
 
 class Role(db.Model):
@@ -63,10 +71,17 @@ def index():
         session['user'] = form.name.data
         form.name.data = ''
         return redirect(url_for('index'))
-    return render_template('index.html', form = form, name = session.get('name'), known=session.get('known', False), current_time=datetime.utc())
+    return render_template('index.html', form = form, name = session.get('name'), known=session.get('known', False), current_time=datetime.utcnow())
 
+@app.route('/user/<name>')
+def user_page(name):
+    review = ReviewForm()
+    return render_template('user_page.html',review=review, name = name, current_time=datetime.utcnow())
+    
+    
 @app.shell_context_processor
 def make_shell_context():
     return dict(db=db, User=User, Role=Role)
+
 
     
