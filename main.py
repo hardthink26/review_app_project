@@ -73,7 +73,7 @@ def index():
         return redirect(url_for('index'))
     return render_template('index.html', form = form, name = session.get('name'), known=session.get('known', False), current_time=datetime.utcnow())
 
-@app.route('/user/<name>')
+@app.route('/user/<name>', methods=['GET', 'POST'])
 def user_page(name):
     review = ReviewForm()
     return render_template('user_page.html',review=review, name = name, current_time=datetime.utcnow())
