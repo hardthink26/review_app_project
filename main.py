@@ -29,7 +29,7 @@ class NameForm(FlaskForm):
 class ReviewForm(FlaskForm):
     problem = StringField('문제 이름을 적어주세요', validators=[DataRequired()])
     date = DateField('푼 날짜', format='%Y-%m-%d')
-    importance = SelectField("중요도", choices = [('1', '*'), ('2', '**'), ('3', '***')], coerce=int)
+    importance = SelectField("중요도", choices = [('1', '*'), ('2', '**'), ('3', '***')], coerce=int, validators=[DataRequired()])
     
 
     submit = SubmitField('Submit')
@@ -42,20 +42,32 @@ class Role(db.Model):
     def __repr__(self):
         return '<Role %r>' % self.name 
 
-    user = db.relationship('User', backref='role', lazy='dynamic')
+    users = db.relationship('User', backref='role', lazy='dynamic')
 
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True )
 
+
     def __repr__(self):
         return '<User %r>' % self.username 
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    problems = db.relationship('Problem', backref='user', lazy='dynamic')
+
+class Problem(db.Model):
+    __tablename__ = 'problems'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    date = db.Column(db.Date) 
+    importance = db.Column(db.Integer, index=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        return '<Problem %r>' %self.name
 
 
-    
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
@@ -71,17 +83,21 @@ def index():
         session['user'] = form.name.data
         form.name.data = ''
         return redirect(url_for('index'))
-    return render_template('index.html', form = form, name = session.get('name'), known=session.get('known', False), current_time=datetime.utcnow())
+    return render_template('index.html', form = form, name = session.get('user'), known=session.get('known', False), current_time=datetime.utcnow())
 
 @app.route('/user/<name>', methods=['GET', 'POST'])
 def user_page(name):
     review = ReviewForm()
+    if review.validate_on_submit():
+        
     return render_template('user_page.html',review=review, name = name, current_time=datetime.utcnow())
     
     
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, User=User, Role=Role)
+    return dict(db=db, User=User, Role=Role, Problem=Problem)
+
+
 
 
     
