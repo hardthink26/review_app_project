@@ -13,3 +13,5 @@ __pycache__/
 
 # VS Code (선택)
 .vscode/
+
+data.sqlite
