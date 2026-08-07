@@ -83,23 +83,24 @@ def index():
         session['user'] = form.name.data
         form.name.data = ''
         return redirect(url_for('index'))
-    return render_template('index.html', form = form, name = session.get('user'), known=session.get('known', False), current_time=datetime.utcnow())
+    return render_template('index.html', form = form, name = session.get('user'), 
+                           known=session.get('known', False), current_time=datetime.utcnow())
 
 @app.route('/user/<name>', methods=['GET', 'POST'])
 def user_page(name):
     review = ReviewForm()
+    user = User.query.filter_by(username = name).first()
 
     if review.validate_on_submit():
-        user = User.query.filter_by(username = name).first()
         problem = Problem(name = review.problem.data, date = review.date.data, 
                         importance = review.importance.data, user = user)
-
         db.session.add(problem)
         db.session.commit()
         return redirect(url_for('user_page', name=name))
-    
-    
-    return render_template('user_page.html',review=review, name =name , current_time=datetime.utcnow())
+
+    problems = user.problems.all()
+
+    return render_template('user_page.html',review=review, name=name , problems=problems, current_time=datetime.utcnow())
     
     
 @app.shell_context_processor
