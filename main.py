@@ -90,7 +90,8 @@ def user_page(name):
     review = ReviewForm()
     if review.validate_on_submit():
         
-    return render_template('user_page.html',review=review, name = name, current_time=datetime.utcnow())
+        
+        return render_template('user_page.html',review=review, name = name, current_time=datetime.utcnow())
     
     
 @app.shell_context_processor
