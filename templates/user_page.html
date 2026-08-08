@@ -6,6 +6,15 @@
   <div class="header">
     <h1>리뷰앱</h1>
     <h2>{{ name }}님 환영합니다.!</h2>
+    {% if problems %}
+      {% for problem in problems %} 
+        {{ problem.name }}
+        {{ problem.importance }}
+        {{ problem.date }}
+      {% endfor %} 
+    {% endif %} 
+    
+
   </div>
 </header>
 {{ wtf.quick_form(review) }} {% endblock %}
