@@ -100,7 +100,8 @@ def user_page(name):
 
     problems = user.problems.all()
 
-    return render_template('user_page.html',review=review, name=name , problems=problems, current_time=datetime.utcnow())
+    return render_template('user_page.html',review=review, name=name , problems=problems, 
+                           current_time=datetime.utcnow())
     
     
 @app.shell_context_processor
