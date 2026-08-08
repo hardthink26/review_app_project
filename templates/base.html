@@ -15,10 +15,10 @@
     </div>
     {% endfor %} {% block page_content %}{% endblock %}
   </main>
-  <footer>
+  <aside>
     <p>현재 시각은 {{ moment(current_time).format('LLL') }}.</p>
     <p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
-  </footer>
+  </aside>
 
 {% endblock %} 
 {% block scripts %} 
