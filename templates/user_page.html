@@ -1,20 +1,25 @@
-{% extends "base.html" %} {% import "bootstrap/wtf.html" as wtf %} {% block head
-%}
-<meta name="description" content="form_page를 만들어봅시다." />
-{% endblock %} {% block title %}user_page{% endblock %} {% block page_content %}
-<header>
-  <div class="header">
+{% extends "base.html" %} 
+{% import "bootstrap/wtf.html" as wtf %} 
+{% block metas %}
+  {{ super() }}
+  <meta name="description" content="user_page를 정의합니다.">
+{% endblock %}
+{% block title %}user_page{% endblock %} 
+{% block page_content %}
+  <header>
     <h1>리뷰앱</h1>
     <h2>{{ name }}님 환영합니다.!</h2>
-    {% if problems %}
-      {% for problem in problems %} 
-        {{ problem.name }}
-        {{ problem.importance }}
-        {{ problem.date }}
-      {% endfor %} 
-    {% endif %} 
-    
-
-  </div>
-</header>
-{{ wtf.quick_form(review) }} {% endblock %}
+  </header>
+  <main>
+    <section>
+      {% if problems %}
+        {% for problem in problems %} 
+          {{ problem.name }}
+          {{ problem.importance }}
+          {{ problem.date }}
+        {% endfor %} 
+      {% endif %} 
+    </section>
+  </main>
+{{ wtf.quick_form(review) }} 
+{% endblock %}
