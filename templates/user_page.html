@@ -8,9 +8,11 @@
 {% block page_content %}
   <header>
     <h1>리뷰앱</h1>
-    <h2>{{ name }}님 환영합니다.!</h2>
+    <h2>{{ name }}님, 환영합니다!</h2>
   </header>
-    {{ wtf.quick_form(review) }} 
+    <section>
+      {{ wtf.quick_form(review) }} 
+    </section>
       <section>
         <h2>복습 문제 목록</h2>
         {% if problems %}

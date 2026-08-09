@@ -6,6 +6,10 @@
   <meta name="description" content="base.html을 정의합니다.">
 {% endblock %} 
 {% block title %}리뷰 앱{% endblock %} 
+{% block styles %}
+  {{ super() }} 
+  <link rel="stylesheet" href="{{url_for('static', filename='css/style.css') }}">
+{% endblock %} 
 {% block content %}
   <main class="container">
     {% for message in get_flashed_messages() %}
