@@ -10,16 +10,18 @@
     <h1>리뷰앱</h1>
     <h2>{{ name }}님 환영합니다.!</h2>
   </header>
-  <main>
-    <section>
-      {% if problems %}
-        {% for problem in problems %} 
-          {{ problem.name }}
-          {{ problem.importance }}
-          {{ problem.date }}
-        {% endfor %} 
-      {% endif %} 
-    </section>
-  </main>
-{{ wtf.quick_form(review) }} 
+    {{ wtf.quick_form(review) }} 
+      <section>
+        <h2>복습 문제 목록</h2>
+        {% if problems %}
+          {% for problem in problems %} 
+        <article class="problem-card">
+          <h3>문제: {{ problem.name }}</h3>
+          <p>중요도: {{ problem.importance }}</p>
+          <p>푼 날짜: {{ problem.date }}</p>
+        </article>
+          {% endfor %}
+        {% endif %}
+      </section>
+        
 {% endblock %}
