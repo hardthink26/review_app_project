@@ -21,12 +21,15 @@
           <div class="problem-name">
             <h3>{{ problem.name }}</h3>
           </div>
-          <div class="problem-meta">
-            <p>중요도: {{ problem.importance }}</p>
-          </div>
-          <div class="problem-date">
-            <p>{{ problem.date }}</p>
-          </div>
+          <span>
+          <i class="fa-solid fa-star"></i>
+          중요도:{{ problem.importance }}
+          </span>
+          
+          <span>
+          <i class="fa-solid fa-calendar"></i>
+          {{ problem.date }}
+          </span>
         </article>
           {% endfor %}
         {% endif %}
