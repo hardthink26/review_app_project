@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Diplomata&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+body {
+    font-family: "Nunito", sans-serif;
+}
+
+h1 {
+    font-family: "Bagel Fat One", system-ui;
+    color: #FCE7F3;
+}
+
+.btn.btn-default {
+    background-color:#FCE7F3;
+    font-family:  "Nunito", sans-serif;
+    border-radius:8px;
+}
+.card{
+    border:1px solid #FCE7F3;
+    border-radius: 7px;
+}
+
+.problem-name h3 {
+    font-size: 50px;
+}
+
+.card i{
+    color:#EC4899;
+}
+
+
+
+
+
+
+    
+
+
