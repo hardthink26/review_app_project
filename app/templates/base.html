@@ -11,6 +11,16 @@
   <link rel="stylesheet" href="{{url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css" integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %} 
+{% block navbar %}
+  <ul class="navbar">
+    {% if current_user.is_authenticated %}
+      <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+    {% else %}
+    <!-- 잠시 내 이름 넣은, 나중에 수정 바람  -->
+      <li><a href="{{ url_for('auth.login', name='choi') }}">Log In</a></li>
+    {% endif %}
+  </ul>
+{% endblock %} 
 {% block content %}
   <main class="container">
     {% for message in get_flashed_messages() %}
