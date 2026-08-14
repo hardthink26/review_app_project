@@ -2,27 +2,14 @@ from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash
 from . import main 
 from flask_bootstrap import Bootstrap
-from .forms import NameForm, ReviewForm
+from .forms import  ReviewForm
 from .. import db
 from ..models import User, Problem
+from flask_login import current_user 
 
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/')
 def index():
-    form = NameForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.name.data).first()
-        if user is None:
-            user = User(username = form.name.data)
-            db.session.add(user)
-            db.session.commit()
-            session['known'] = False
-        else:
-            session['known'] = True 
-        session['user'] = form.name.data
-        form.name.data = ''
-        return redirect(url_for('.index'))
-    return render_template('index.html', form = form, name = session.get('user'), 
-                           known=session.get('known', False), current_time=datetime.utcnow())
+    return render_template('index.html', name =current_user.username, current_time=datetime.utcnow())
 
 @main.route('/user/<name>', methods=['GET', 'POST'])
 def user_page(name):
