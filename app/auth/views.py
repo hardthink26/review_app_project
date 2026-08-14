@@ -5,6 +5,7 @@ from ..models import User
 from .forms import LoginForm 
 from datetime import datetime 
 
+# TODO: Replace URL-based username with form input.
 @auth.route('/login/user/<name>', methods=['GET', 'POST'])
 def login(name):
     form = LoginForm()
@@ -18,14 +19,12 @@ def login(name):
             return redirect(next)
 
         flash('Invalid username or password')
-
-    return render_template('auth/login.html', form=form,name=name, current_time=datetime.utcnow())
-
+    return render_template('auth/login.html', form=form, current_time=datetime.utcnow())
 
 @auth.route('/logout')
-@login_required 
+@login_required
 def logout():
     logout_user()
     flash('You have been logged out')
-    return redirect(url_for('main.index')) 
+    return redirect(url_for('main.index'))
 
