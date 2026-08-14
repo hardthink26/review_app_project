@@ -17,7 +17,7 @@
       <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
     {% else %}
     <!-- 잠시 내 이름 넣은, 나중에 수정 바람  -->
-      <li><a href="{{ url_for('auth.login', name='choi') }}">Log In</a></li>
+      <li><a href="{{ url_for('auth.login',name=name) }}">Log In</a></li>
     {% endif %}
   </ul>
 {% endblock %} 

@@ -9,9 +9,10 @@
         {% else %} 
             Stranger 
         {% endif %}! 
+    </h1>
+    <a href="{{ url_for('main.user_page') }}">Home</a>
 </div>
 {% endblock %} 
-{{ wtf.quick_form(form) }}
 
 
 
