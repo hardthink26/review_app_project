@@ -3,7 +3,6 @@
   {{ super() }}
   <meta charset="UTF-8">
   <meta name="author" content="Choi">
-  <meta name="description" content="base.html을 정의합니다.">
 {% endblock %} 
 {% block title %}리뷰 앱{% endblock %} 
 {% block styles %}
@@ -16,7 +15,7 @@
     {% if current_user.is_authenticated %}
       <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
     {% else %}
-    <!-- 잠시 내 이름 넣은, 나중에 수정 바람  -->
+    <!-- 잠시 내 이름 넣음, 나중에 수정 바람  -->
       <li><a href="{{ url_for('auth.login',name=name) }}">Log In</a></li>
     {% endif %}
   </ul>
