@@ -7,6 +7,7 @@ from .. import db
 from ..models import User, Problem
 from flask_login import current_user 
 
+
 @main.route('/')
 def index():
     return render_template('index.html', current_time=datetime.utcnow())
@@ -27,4 +28,5 @@ def user_page():
 
     return render_template('user_page.html',review=review, problems=problems, 
                            current_time=datetime.utcnow())
+
     

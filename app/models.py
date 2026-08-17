@@ -2,7 +2,10 @@ from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin 
 from . import login_manager
-from flask_login import login_required 
+from itsdangerous.url_safe import URLSafeTimedSerializer
+from itsdangerous.exc import BadData 
+from flask import current_app
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -19,14 +22,14 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True) 
     username = db.Column(db.String(64), unique=True, index=True )
-
-
-    def __repr__(self):
-        return '<User %r>' % self.username 
-
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     problems = db.relationship('Problem', backref='user', lazy='dynamic')
     password_hash = db.Column(db.String(128))
+    confirmed = db.Column(db.Boolean, default=False)
+    def __repr__(self):
+        return '<User %r>' % self.username 
+
+ 
 
     @property
     def password(self):
@@ -38,6 +41,25 @@ class User(UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+
+    def generate_confirmation_token(self):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'confirm': self.id})
+
+
+    def confirm(self, token):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token, max_age=3600)
+        except BadData: 
+            return False 
+            
+        if data.get('confirm') != self.id:
+            return False 
+        self.confirmed = True 
+        db.session.add(self)
+        return True 
 
 class Problem(db.Model):
     __tablename__ = 'problems'
