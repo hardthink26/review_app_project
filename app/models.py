@@ -4,18 +4,83 @@ from flask_login import UserMixin
 from . import login_manager
 from itsdangerous.url_safe import URLSafeTimedSerializer
 from itsdangerous.exc import BadData 
-from flask import current_app
-
+from flask import current_app 
 
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-
+    default = db.Column(db.Boolean, default=False, index=True)
+    permissions = db.Column(db.Integer, default = 0) 
+    users = db.relationship('User', backref='role', lazy='dynamic')
     def __repr__(self):
         return '<Role %r>' % self.name 
 
-    users = db.relationship('User', backref='role', lazy='dynamic')
+    def __init__(self, **kwargs):
+        super(Role, self).__init__(**kwargs)
+        if self.permissions is None: 
+            self.permissions = 0 
+
+
+    def add_permissions(self,weight): 
+        permission = getattr(Permission, weight) 
+
+        if (self.permissions & permission) != permission: 
+            self.permissions = self.permissions | permission 
+
+
+    def remove_permissions(self, weight): 
+        permission = getattr(Permission, weight) 
+
+        if self.permissions & permission == permission: 
+            self.permissions = self.permissions & ~permission 
+
+
+    def has_permissions(self, weight):  
+        permission = getattr(Permission, weight)
+
+        if self.permissions & permission == permission: 
+            return True 
+        else:
+            return False 
+
+
+    def reset_permissions(self):
+        self.permissions = 0 
+
+
+    @staticmethod
+    def add_roles(): 
+        roles = {
+            "User":["Follow", "Edit", "Comment"],
+            "Admin":["Follow", "Edit", "Comment", "Admin"] 
+        } 
+        default_user = 'User' 
+
+        for key in roles.keys():
+            role = Role.query.filter_by(name=key).first()
+            if role is None: 
+                role = Role(name=key) 
+            role.reset_permissions() 
+            for values in roles[key]:
+                role.add_permissions(values)
+            role.default = (role.name == default_user) 
+            db.session.add(role) 
+        db.session.commit() 
+            
+                
+
+
+
+
+class Permission():
+    """define each roles and added to weight."""
+    Follow = 1 
+    Edit = 2 
+    Comment = 4 
+    Admin = 8 
+    
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
