@@ -1,6 +1,6 @@
 from . import db 
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin 
+from flask_login import UserMixin, AnonymousUserMixin
 from . import login_manager
 from itsdangerous.url_safe import URLSafeTimedSerializer
 from itsdangerous.exc import BadData 
@@ -22,27 +22,17 @@ class Role(db.Model):
             self.permissions = 0 
 
 
-    def add_permissions(self,weight): 
-        permission = getattr(Permission, weight) 
-
-        if (self.permissions & permission) != permission: 
-            self.permissions = self.permissions | permission 
+    def add_permissions(self,perm):
+        if not self.has_permissions(perm):
+            self.permissions +=  perm 
 
 
-    def remove_permissions(self, weight): 
-        permission = getattr(Permission, weight) 
+    def remove_permissions(self, perm):
+        if self.has_permissions(perm):
+            self.permissions -= perm 
 
-        if self.permissions & permission == permission: 
-            self.permissions = self.permissions & ~permission 
-
-
-    def has_permissions(self, weight):  
-        permission = getattr(Permission, weight)
-
-        if self.permissions & permission == permission: 
-            return True 
-        else:
-            return False 
+    def has_permissions(self, perm): 
+        return self.permissions & perm == perm 
 
 
     def reset_permissions(self):
@@ -52,8 +42,8 @@ class Role(db.Model):
     @staticmethod
     def add_roles(): 
         roles = {
-            "User":["Follow", "Edit", "Comment"],
-            "Admin":["Follow", "Edit", "Comment", "Admin"] 
+            "User":[Permission.Follow, Permission.Edit, Permission.Comment],
+            "Admin":[Permission.Follow, Permission.Edit, Permission.Comment, Permission.Admin] 
         } 
         default_user = 'User' 
 
@@ -125,6 +115,37 @@ class User(UserMixin, db.Model):
         self.confirmed = True 
         db.session.add(self)
         return True 
+
+    def __init__(self, **kwargs): 
+        super(User, self).__init__(**kwargs)
+        if self.role is None: 
+            if self.email == current_app.config['FLASKY_ADMIN']:
+                self.role = Role.query.filter_by(name="Admin").first() 
+            else: 
+                self.role = Role.query.filter_by(default=True).first() 
+
+    
+
+
+    def can(self, perm): 
+        if self.role is not None and self.role.has_permissions(perm): 
+            return True 
+        else:
+            return False 
+
+    def is_administrator(self):
+        return self.can(Permission.Admin)  
+
+
+class AnonymousUser(AnonymousUserMixin): 
+    def can(self, permissions):
+        return False 
+
+
+    def is_administrator(self):
+        return False 
+        
+login_manager.anonymous_user = AnonymousUser
 
 class Problem(db.Model):
     __tablename__ = 'problems'
