@@ -1,7 +1,25 @@
 import unittest 
-from app.models import User 
+from app.models import User, Permission, Role, AnonymousUser
+from app import create_app, db
+from config import Config
+
+
+
 
 class UserModelTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
+
+    
     def test_password_setter(self):
         u = User(password = 'cat')
         self.assertTrue(u.password_hash is not None)
@@ -24,3 +42,26 @@ class UserModelTestCase(unittest.TestCase):
         u2 = User(password='cat')
         self.assertTrue(u.password_hash != u2.password_hash)
 
+
+    def test_user_has_user_role(self):
+        Role.add_roles()
+        u = User(username="jo", email='jo@example.com')
+        self.assertTrue(u.can(Permission.Follow))
+        self.assertTrue(u.can(Permission.Edit))
+        self.assertTrue(u.can(Permission.Comment))
+        self.assertFalse(u.can(Permission.Admin))
+
+
+    def test_user_is_admin(self):
+        Role.add_roles()
+        u = User(username="joe", email=Config.FLASKY_ADMIN)
+        self.assertTrue(u.is_administrator())
+
+
+    def test_anonymous_user(self):
+        u = AnonymousUser()
+        self.assertFalse(u.can(Permission.Follow))
+        self.assertFalse(u.can(Permission.Edit))
+        self.assertFalse(u.can(Permission.Comment))
+        self.assertFalse(u.can(Permission.Admin))
+        
