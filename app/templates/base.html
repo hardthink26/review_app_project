@@ -11,16 +11,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css" integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %} 
 {% block navbar %}
-  <ul class="navbar">
     {% if current_user.is_authenticated %}
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
-    {% else %}
-    <!-- 잠시 내 이름 넣음, 나중에 수정 바람  -->
-      <li><a href="{{ url_for('auth.login',name=name) }}">Log In</a></li>
-    {% endif %}
-  </ul>
+    <li>
+      <a href="{{ url_for('main.user_profile', username=current_user.username) }}">
+        Profile 
+      </a>
+    </li>
+    {% endif %} 
 {% endblock %} 
 {% block content %}
+  {% block header %}{% endblock %} 
   <main class="container">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
@@ -33,7 +33,6 @@
     <p>현재 시각은 {{ moment(current_time).format('LLL') }}.</p>
     <p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
   </aside>
-
 {% endblock %} 
 {% block scripts %} 
   {{ super() }} 

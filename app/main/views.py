@@ -29,4 +29,11 @@ def user_page():
     return render_template('user_page.html',review=review, problems=problems, 
                            current_time=datetime.utcnow())
 
+
+@main.route('/user/<username>')
+def user_profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('user_profile.html',user=user, current_time=datetime.utcnow())
+
+
     
