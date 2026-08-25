@@ -5,7 +5,7 @@
     <h1>Hello,
         {% if current_user.is_authenticated %}
             {{ current_user.username }}!
-            <br><a href="{{ url_for('main.user_page') }}">Home</a></br> 
+            <br><a href="{{ url_for('main.user_page') }}">Start</a></br> 
         {% else %} 
             Stranger! 
         {% endif %}

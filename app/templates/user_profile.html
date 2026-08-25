@@ -1,0 +1,33 @@
+{% extends "base.html" %} 
+{% block navbar %}
+    <a href="{{ url_for('main.index')}}">Home</a>
+    {% if user == current_user %}
+        <a class="btn-default" href="{{ url_for('.edit_profile')}}">
+            Edit Profile
+        </a>
+    {% endif %} 
+{% endblock %}
+{% block page_content %} 
+<div class="page-header">
+    {% if user.name or user.location %}
+    <p>
+    {% if user.name %}<p>Hi! {{ user.name }}</p>{% endif %} 
+        {% if user.location %}
+            <p><a href="https://maps.google.com/?q={{ user.location }}">
+            {{ user.location }}</a></p>
+        {% endif %} 
+    {% endif %} 
+    {% if user.is_administrator() %} 
+        <p><a href="mailto:{{ user.email }}">my email</a></p>
+    {% endif %} 
+    {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %} 
+    <p>
+    member-since:{{ moment(user.member_since).format('LLL') }}
+    last-seen:{{ moment(user.last_seen).fromNow(refresh=True) }}
+    </p>
+</div> 
+{% endblock %} 
+
+
+
+
