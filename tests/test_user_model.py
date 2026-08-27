@@ -1,24 +1,28 @@
-import unittest 
+import unittest, pytest 
 from app.models import User, Permission, Role, AnonymousUser
 from app import create_app, db
 from config import Config
 
 
+@pytest.fixture(scope="class") 
+def user_db(): 
+    app = create_app('testing') 
+    with app.app_context(): 
+        db.create_all() 
+        yield db 
+        db.drop_all() 
 
 
+@pytest.fixture(scope="function")
+def initialize_db(user_db): 
+    yield user_db
+    db.session.remove()
+    db.drop_all()
+    db.create_all() 
+        
+        
+@pytest.mark.usefixtures("initialize_db")
 class UserModelTestCase(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
-
     
     def test_password_setter(self):
         u = User(password = 'cat')
