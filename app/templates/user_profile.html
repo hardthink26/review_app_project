@@ -6,6 +6,11 @@
             Edit Profile
         </a>
     {% endif %} 
+    {% if current_user.is_administrator() %}
+    <a class="btn-danger" href="{{ url_for('.admin_edit', id=user.id) }}">
+        Edit profile[Admin] 
+    </a>
+    {% endif %} 
 {% endblock %}
 {% block page_content %} 
 <div class="page-header">

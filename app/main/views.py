@@ -2,10 +2,11 @@ from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash
 from . import main 
 from flask_bootstrap import Bootstrap
-from .forms import  ReviewForm, EditProfile
+from .forms import  ReviewForm, EditProfile, EditProfileAdminForm
 from .. import db
-from ..models import User, Problem
+from ..models import User, Problem, Role 
 from flask_login import current_user, login_required
+from ..decorators import admin_required
 
 
 @main.route('/')
@@ -54,6 +55,34 @@ def edit_profile():
     return render_template('edit_profile.html', form=form, current_time=datetime.utcnow()) 
 
 
+@main.route('/admin-edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def admin_edit(id): 
+    user = User.query.get_or_404(id)
+    form = EditProfileAdminForm(user=user) 
+    if form.validate_on_submit():
+        user.email = form.email.data
+        user.name = form.name.data 
+        user.username = form.username.data 
+        user.location = form.location.data 
+        user.about_me = form.about_me.data
+        user.confirmed = form.confirmed.data
+        user.role = Role.query.get(form.role.data) 
+        flash("You have been updated")
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('.user_profile', username=user.username)) 
+    form.email.data = user.email 
+    form.name.data = user.name 
+    form.username.data = user.username 
+    form.location.data = user.location 
+    form.about_me.data = user.about_me 
+    form.confirmed.data = user.confirmed 
+    form.role.data = user.role_id 
+    return render_template('edit_profile.html', form=form, user=user, current_time=datetime.utcnow()) 
+
+    
     
         
         
