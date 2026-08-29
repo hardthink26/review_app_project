@@ -2,16 +2,13 @@ from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash
 from . import main 
 from flask_bootstrap import Bootstrap
-from .forms import  ReviewForm, EditProfile, EditProfileAdminForm
+from .forms import  ReviewForm, EditProfile, EditProfileAdminForm, PostForm
 from .. import db
-from ..models import User, Problem, Role 
+from ..models import User, Problem, Role, Permission, Post 
 from flask_login import current_user, login_required
 from ..decorators import admin_required
 
 
-@main.route('/')
-def index():
-    return render_template('index.html', current_time=datetime.utcnow())
 
 @main.route('/user', methods=['GET', 'POST'])
 def user_page():
@@ -82,7 +79,23 @@ def admin_edit(id):
     form.role.data = user.role_id 
     return render_template('edit_profile.html', form=form, user=user, current_time=datetime.utcnow()) 
 
-    
+
+@main.route('/', methods=['GET', 'POST'])
+def index():
+    form = PostForm()
+    if current_user.can(Permission.Edit) and form.validate_on_submit():
+        post =  Post(body=form.body.data, timestamp=form.timestamp.data, author=\
+                     current_user._get_current_object())#안 되는지 체크 
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('.index'))
+    #작성한 포스트를 나열해야함 
+    posts = Post.query.order_by(Post.timestamp.desc()).all() 
+    return render_template('index.html', form=form, current_time=datetime.utcnow(), posts=posts) 
+
+
+
+
     
         
         

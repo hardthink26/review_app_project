@@ -1,6 +1,6 @@
 
 from flask_wtf import FlaskForm 
-from wtforms import StringField, SubmitField, DateField, SelectField, TextAreaField, BooleanField
+from wtforms import StringField, SubmitField, DateField, SelectField, TextAreaField, BooleanField, DateTimeField
 from wtforms.validators import DataRequired, Length, Email, Regexp, ValidationError
 from ..models import User, Role 
 class ReviewForm(FlaskForm):
@@ -51,6 +51,11 @@ class EditProfileAdminForm(FlaskForm):
         if field.data != self.user.username and  User.query.filter_by(username=field.data).first():
             raise ValidationError("Username already in use.") 
 
+
+class PostForm(FlaskForm):
+    body = TextAreaField("what's in Your mind?", validators=[DataRequired()])
+    timestamp = DateTimeField("Post Time", format='%Y-%m-%d')#굳이 없어도 됨 
+    submit = SubmitField("Submit") 
 
 
 
