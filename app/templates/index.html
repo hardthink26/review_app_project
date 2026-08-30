@@ -6,14 +6,28 @@
     <h1>Hello,
         {% if current_user.is_authenticated %}
             {{ current_user.username }}!
-            <br><a href="{{ url_for('main.user_page') }}">Start</a></br> 
+            <br><a href="{{ url_for('main.user_page') }}">Start</a>
         {% else %} 
             Stranger! 
         {% endif %}
     </h1>
-    
-    
-    
+    {% if current_user.can(Permission.Edit) %} 
+        {{ wtf.quick_form(form) }} 
+    {% endif %} 
+    <h2>post list</h2>
+    <ul class="posts">
+    {% for post in posts %} 
+        <li class="post">
+            <div class="post-date">{{ moment(post.timestamp).fromNow() }}</div> 
+            <div class="post-author">
+                <a href="{{ url_for('.user_profile', username=post.author.username) }}">
+                    {{ post.author.username }}
+                </a>
+            </div> 
+            <div class="post-body">{{ post.body }}</div>
+        </li>
+    {% endfor %} 
+    </ul>
 </div>
 {% endblock %} 
 

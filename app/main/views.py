@@ -84,8 +84,7 @@ def admin_edit(id):
 def index():
     form = PostForm()
     if current_user.can(Permission.Edit) and form.validate_on_submit():
-        post =  Post(body=form.body.data, timestamp=form.timestamp.data, author=\
-                     current_user._get_current_object())#안 되는지 체크 
+        post =  Post(body=form.body.data, author=current_user._get_current_object())#안 되는지 체크 
         db.session.add(post)
         db.session.commit()
         return redirect(url_for('.index'))
