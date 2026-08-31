@@ -30,6 +30,9 @@
     member-since:{{ moment(user.member_since).format('LLL') }}
     last-seen:{{ moment(user.last_seen).fromNow(refresh=True) }}
     </p>
+    <!-- 놏친 지점: 어떤 사용자의 글인지 명시안함  -->
+    <h3>Posts by {{ user.username }}</h3>
+    {% include '_posts.html' %} 
 </div> 
 {% endblock %} 
 

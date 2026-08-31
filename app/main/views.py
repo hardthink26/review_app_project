@@ -1,5 +1,5 @@
 from datetime import datetime 
-from flask import Flask, render_template, session, redirect, url_for, flash
+from flask import Flask, render_template, session, redirect, url_for, flash, abort
 from . import main 
 from flask_bootstrap import Bootstrap
 from .forms import  ReviewForm, EditProfile, EditProfileAdminForm, PostForm
@@ -29,9 +29,13 @@ def user_page():
 
 
 @main.route('/user/<username>')
+@login_required
 def user_profile(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user_profile.html',user=user, current_time=datetime.utcnow())
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        abort(404) 
+    posts = user.posts.order_by(Post.timestamp.desc()).all() 
+    return render_template('user_profile.html',user=user, posts=posts, current_time=datetime.utcnow())
 
 
 @main.route('/user-profile', methods=['GET', 'POST'])
