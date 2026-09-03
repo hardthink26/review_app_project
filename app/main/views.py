@@ -1,5 +1,5 @@
 from datetime import datetime 
-from flask import Flask, render_template, session, redirect, url_for, flash, abort
+from flask import Flask, render_template, session, redirect, url_for, flash, abort, request, current_app
 from . import main 
 from flask_bootstrap import Bootstrap
 from .forms import  ReviewForm, EditProfile, EditProfileAdminForm, PostForm
@@ -93,8 +93,12 @@ def index():
         db.session.commit()
         return redirect(url_for('.index'))
     #작성한 포스트를 나열해야함 
-    posts = Post.query.order_by(Post.timestamp.desc()).all() 
-    return render_template('index.html', form=form, current_time=datetime.utcnow(), posts=posts) 
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=True)
+    posts = pagination.item 
+    return render_template('index.html', form=form, current_time=datetime.utcnow(), pagination=pagination, posts=posts)  
+
+
 
 
 
