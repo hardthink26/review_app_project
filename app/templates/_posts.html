@@ -1,4 +1,4 @@
- <h2>post list</h2>
+<h2>post list</h2>
     <ul class="posts">
     {% for post in posts %} 
         <li class="post">
@@ -8,7 +8,18 @@
                     {{ post.author.username }}
                 </a>
             </div> 
-            <div class="post-body">{{ post.body }}</div>
+            <div class="post-content">
+            {% if post.body_html %} 
+                {{ post.body_html | safe }} 
+            {% else %} 
+                {{ post.body }} 
+            {% endif %} 
+                <div class="post-footer">
+                    <a href="{{ url_for('.post', id=post.id) }}">
+                        <span class="label label-default">Permalink</span>
+                    </a>
+                </div>
+            </div> 
         </li>
     {% endfor %} 
     </ul>

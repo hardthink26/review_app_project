@@ -86,7 +86,7 @@ def admin_edit(id):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    form = PostForm()
+    form = PostForm() 
     if current_user.can(Permission.Edit) and form.validate_on_submit():
         post =  Post(body=form.body.data, author=current_user._get_current_object())#안 되는지 체크 
         db.session.add(post)
@@ -94,10 +94,16 @@ def index():
         return redirect(url_for('.index'))
     #작성한 포스트를 나열해야함 
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=True)
-    posts = pagination.item 
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    posts = pagination.items
     return render_template('index.html', form=form, current_time=datetime.utcnow(), pagination=pagination, posts=posts)  
 
+@main.route('/post/<int:id>')
+def post(id): 
+    post = Post.query.get_or_404(id)
+    return render_template('post.html', posts = [post], current_time=datetime.utcnow()) 
+
+    
 
 
 

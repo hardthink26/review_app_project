@@ -6,6 +6,12 @@ from itsdangerous.url_safe import URLSafeTimedSerializer
 from itsdangerous.exc import BadData 
 from flask import current_app 
 from datetime import datetime 
+from markdown import markdown
+from sqlalchemy import event 
+import nh3 
+
+
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -176,9 +182,17 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True) 
     body = db.Column(db.Text)
+    body_html = db.Column(db.Text) 
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
+    @staticmethod 
+    def on_changed_body(target, value, oldvalue, initiator): 
+        allowed_tags =set(['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
+                           'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']) 
+        target.body_html = nh3.clean(markdown(value, extensions=['pymdownx.magiclink'],
+                                                                  output_format='html'),tags=allowed_tags) 
+event.listen(Post.body, 'set', Post.on_changed_body) 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

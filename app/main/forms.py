@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DateField, SelectField, TextAreaField, BooleanField, DateTimeField
 from wtforms.validators import DataRequired, Length, Email, Regexp, ValidationError
 from ..models import User, Role 
+from flask_pagedown.fields import PageDownField
 
 class ReviewForm(FlaskForm):
     problem = StringField('문제 이름을 적어주세요', validators=[DataRequired()])
@@ -54,7 +55,7 @@ class EditProfileAdminForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    body = TextAreaField("what's in Your mind?", validators=[DataRequired()])
+    body =  PageDownField("what's in Your mind?", validators=[DataRequired()])
     submit = SubmitField("Submit") 
 
 
