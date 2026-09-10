@@ -103,6 +103,24 @@ def post(id):
     post = Post.query.get_or_404(id)
     return render_template('post.html', posts = [post], current_time=datetime.utcnow()) 
 
+
+@main.route('/edit/<int:id>', methods=['GET', 'POST']) 
+@login_required
+def edit(id): 
+    post = Post.query.get_or_404(id) 
+    if current_user != post.author and not current_user.can(Permission.Admin) : 
+        abort(403) 
+    form = PostForm() 
+    if form.validate_on_submit(): 
+        post.body = form.body.data
+        db.session.add(post)
+        db.session.commit() 
+        flash('The Post has been updated.')
+    form.body.data = post.body 
+    return render_template('edit_post.html', form=form, current_time=datetime.utcnow()) 
+    
+    
+
     
 
 

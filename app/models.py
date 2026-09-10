@@ -76,6 +76,13 @@ class Permission():
     Edit = 2 
     Comment = 4 
     Admin = 8 
+
+
+class Follow(db.Model): 
+    __tablename__ = 'Follow' 
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) 
+    timestamp = db.Column(db.Datetime, default=datetime.utcnow) 
     
 
 
@@ -94,6 +101,17 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow) 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    followed = db.relationship('Follow',
+                               foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower', lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all, delete-orphan') 
+    followers = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                               backref=db.backref('followed', lazy='joined'), 
+                               lazy='dynamic',
+                               cascade='all, delete-orphan') 
+
     def __repr__(self):
         return '<User %r>' % self.username 
 
@@ -152,7 +170,8 @@ class User(UserMixin, db.Model):
         self.last_seen=datetime.utcnow()
         db.session.add(self)
         db.session.commit() 
-        
+
+
 
 
 
