@@ -33,7 +33,21 @@
     <!-- 놏친 지점: 어떤 사용자의 글인지 명시안함  -->
     <h3>Posts by {{ user.username }}</h3>
     {% include '_posts.html' %} 
-</div> 
+    {% if current_user.can(Permission.Follow) and current_user != user %} 
+        {% if not current_user.is_following(user) %} 
+        <span>
+            <a href="{{ url_for('.follow') }}">Follow</a>
+        </span>
+        {% else %} 
+        <a href="{{ url_for('.unfollow') }}">Unfollow</a>
+        {% endif %} 
+    {% endif %} 
+    <h3>Followers: {{ user.followers.count() }}</h3>
+    <h3>Following: {{ user.followed.count() }}</h3>
+    {% if current_user.is_authenticated and current_user != user and user.is_following(current_user) %} 
+    <span>Follows you</span>
+    {% endif %} 
+</div>
 {% endblock %} 
 
 

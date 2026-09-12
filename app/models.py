@@ -82,7 +82,7 @@ class Follow(db.Model):
     __tablename__ = 'Follow' 
     follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) 
-    timestamp = db.Column(db.Datetime, default=datetime.utcnow) 
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow) 
     
 
 
@@ -171,9 +171,26 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         db.session.commit() 
 
+    def follow(self, user): 
+        if not self.is_following(user): 
+            f = Follow(follower_id=self.id, followed_id=user.id)
+            db.session.add(f)
 
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f: 
+            db.session.add(f) 
 
+    def is_following(self, user): 
+        if user.id is None: 
+            return False 
+        return self.followed.filter_by(followed_id=user.id).first() is not None 
 
+    def is_followed_by(self, user): 
+        if user.id is None: 
+            return False 
+        return self.followers.filter_by(follower_id=user.id).first() is not None 
+    
 
 class AnonymousUser(AnonymousUserMixin): 
     def can(self, permissions):
