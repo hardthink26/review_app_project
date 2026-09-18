@@ -7,7 +7,7 @@ from itsdangerous.exc import BadData
 from flask import current_app 
 from datetime import datetime 
 from markdown import markdown
-from sqlalchemy import event 
+from sqlalchemy import event, select 
 import nh3 
 
 
@@ -179,7 +179,7 @@ class User(UserMixin, db.Model):
     def unfollow(self, user):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f: 
-            db.session.add(f) 
+            db.session.delete(f) 
 
     def is_following(self, user): 
         if user.id is None: 
@@ -190,6 +190,12 @@ class User(UserMixin, db.Model):
         if user.id is None: 
             return False 
         return self.followers.filter_by(follower_id=user.id).first() is not None 
+    
+    @property
+    def followed_posts(self): 
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+            .filter(Follow.follower_id == self.id) 
+        
     
 
 class AnonymousUser(AnonymousUserMixin): 

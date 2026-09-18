@@ -36,10 +36,10 @@
     {% if current_user.can(Permission.Follow) and current_user != user %} 
         {% if not current_user.is_following(user) %} 
         <span>
-            <a href="{{ url_for('.follow') }}">Follow</a>
+            <a href="{{ url_for('.follow', username=user.username) }}">Follow</a>
         </span>
         {% else %} 
-        <a href="{{ url_for('.unfollow') }}">Unfollow</a>
+        <a href="{{ url_for('.unfollow', username=user.username) }}">Unfollow</a>
         {% endif %} 
     {% endif %} 
     <h3>Followers: {{ user.followers.count() }}</h3>
