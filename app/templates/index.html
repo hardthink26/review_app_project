@@ -15,7 +15,14 @@
     {% if current_user.can(Permission.Edit) %} 
         {{ wtf.quick_form(form) }} 
     {% endif %} 
-
+    <ul class="nav nav-tabs"> 
+        <li class="nav-item">
+            <a class="nav-link {{ '' if show_followed else 'active'  }}" href="{{ url_for('.show_all') }}">All</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ 'active' if show_followed else '' }}" href="{{ url_for('.show_followed') }}">Followed</a>
+        </li>
+    </ul>
     {% include '_posts.html' %} 
     {{ macros.pagination_widget(pagination, ".index") }}
     

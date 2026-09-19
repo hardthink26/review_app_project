@@ -1,5 +1,5 @@
 from datetime import datetime 
-from flask import Flask, render_template, session, redirect, url_for, flash, abort, request, current_app
+from flask import Flask, render_template, session, redirect, url_for, flash, abort, request, current_app, make_response
 from . import main 
 from flask_bootstrap import Bootstrap
 from .forms import  ReviewForm, EditProfile, EditProfileAdminForm, PostForm
@@ -94,9 +94,18 @@ def index():
         return redirect(url_for('.index'))
     #작성한 포스트를 나열해야함 
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    show_followed = False 
+    if current_user.is_authenticated: 
+        show_followed = bool(request.cookies.get('show_followed', ''))
+    if show_followed: 
+        query = current_user.followed_posts 
+    else: 
+        query = Post.query 
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
     posts = pagination.items
-    return render_template('index.html', form=form, current_time=datetime.utcnow(), pagination=pagination, posts=posts)  
+    return render_template('index.html', form=form, current_time=datetime.utcnow(),
+                            pagination=pagination, posts=posts, show_followed=show_followed)
+
 
 @main.route('/post/<int:id>')
 def post(id): 
@@ -166,11 +175,23 @@ def followers(username):
                             endpoint='.followers',current_time=datetime.utcnow()) 
 
 
+@main.route('/all')
+@login_required
+def show_all(): 
+    resp = make_response(redirect(url_for('.index'))) 
+    resp.set_cookie('show_followed','', max_age = 30*24*60*60) 
+    return resp
+
+
+@main.route('/followed')
+@login_required
+def show_followed(): 
+    resp = make_response(redirect(url_for('.index'))) 
+    resp.set_cookie('show_followed',value='1', max_age=30*24*60*60)
+    return resp 
 
 
 
-    
-        
         
         
     
