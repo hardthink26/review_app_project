@@ -115,8 +115,6 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User %r>' % self.username 
 
- 
-
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute.')
@@ -128,11 +126,9 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-
     def generate_confirmation_token(self):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
         return s.dumps({'confirm': self.id})
-
 
     def confirm(self, token):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -140,7 +136,6 @@ class User(UserMixin, db.Model):
             data = s.loads(token, max_age=3600)
         except BadData: 
             return False 
-            
         if data.get('confirm') != self.id:
             return False 
         self.confirmed = True 
@@ -154,17 +149,13 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(name="Admin").first() 
             else: 
                 self.role = Role.query.filter_by(default=True).first() 
-
-    
-
+        self.follow(self) 
 
     def can(self, perm): 
         return  self.role is not None and self.role.has_permissions(perm)
       
-
     def is_administrator(self):
         return self.can(Permission.Admin)  
-
 
     def ping(self):
         self.last_seen=datetime.utcnow()
@@ -173,7 +164,7 @@ class User(UserMixin, db.Model):
 
     def follow(self, user): 
         if not self.is_following(user): 
-            f = Follow(follower_id=self.id, followed_id=user.id)
+            f = Follow(follower=self, followed=user)
             db.session.add(f)
 
     def unfollow(self, user):
@@ -195,18 +186,25 @@ class User(UserMixin, db.Model):
     def followed_posts(self): 
         return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
             .filter(Follow.follower_id == self.id) 
-        
-    
 
+    @staticmethod
+    def add_self_follow(): 
+        for user in User.query.all(): 
+            if not user.is_following(user): 
+                user.follow(user) 
+                db.session.add(user) 
+        db.session.commit()
+                
+        
 class AnonymousUser(AnonymousUserMixin): 
     def can(self, permissions):
         return False 
-
 
     def is_administrator(self):
         return False 
         
 login_manager.anonymous_user = AnonymousUser
+
 
 class Problem(db.Model):
     __tablename__ = 'problems'
@@ -218,7 +216,7 @@ class Problem(db.Model):
 
     def __repr__(self):
         return '<Problem %r>' %self.name
-
+    
 
 class Post(db.Model):
     __tablename__ = 'posts'

@@ -42,8 +42,8 @@
         <a href="{{ url_for('.unfollow', username=user.username) }}">Unfollow</a>
         {% endif %} 
     {% endif %} 
-    <h3>Followers: {{ user.followers.count() }}</h3>
-    <h3>Following: {{ user.followed.count() }}</h3>
+    <h3>Followers: {{ user.followers.count()-1 }}</h3>
+    <h3>Following: {{ user.followed.count()-1 }}</h3>
     {% if current_user.is_authenticated and current_user != user and user.is_following(current_user) %} 
     <span>Follows you</span>
     {% endif %} 
