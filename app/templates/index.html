@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %} 
 {% import "_macros.html" as macros %} 
-
 {% block page_content %} 
 <div class="page_content">
     <h1>Hello,
@@ -25,8 +24,6 @@
     </ul>
     {% include '_posts.html' %} 
     {{ macros.pagination_widget(pagination, ".index") }}
-    
-
 </div>
 {% endblock %} 
 {% block scripts %} 

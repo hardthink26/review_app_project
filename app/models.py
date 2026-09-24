@@ -256,7 +256,5 @@ class Comment(db.Model):
                                    'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']) 
         target.body_html = nh3.clean(markdown(value, extensions=['pymdownx.magiclink'],                                
                                      output_format='html'),tags=allowed_tags) 
-        
-
 
 event.listen(Comment.body, 'set', Comment.on_changed_body)
