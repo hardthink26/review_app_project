@@ -1,13 +1,16 @@
 {% extends "base.html" %} 
 {% import "bootstrap/wtf.html" as wtf %} 
 {% import "_macros.html" as macros %} 
+
 {% block title %}Flasky - post{% endblock %} 
+
 {% block page_content %} 
 {% include '_posts.html' %} 
 {{ macros.pagination_widget(pagination, ".post", id=posts[0].id) }}
 {% include '_comments.html' %}
 {{ wtf.quick_form(form) }} 
 {% endblock %} 
+
 {% block scripts %} 
     {{ super() }} 
     {{ pagedown.include_pagedown() }} 

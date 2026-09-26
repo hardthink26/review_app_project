@@ -19,6 +19,9 @@
       </a>
     </li>
     {% endif %} 
+  {% if current_user.can(Permission.Admin) %} 
+  <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+  {% endif %} 
 {% endblock %} 
 {% block content %}
   <main class="container">
