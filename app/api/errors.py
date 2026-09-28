@@ -1,5 +1,6 @@
 from .. import main 
 from flask import request, jsonify, render_template
+ 
 
 @main.app_errorhandler(404)
 def page_not_found(e):
@@ -15,3 +16,10 @@ def forbidden(message):
     response.status_code = 403 
     return response 
 
+
+def unauthorized(message): 
+    response = jsonify({'error' : 'unauthorized', 'message' : message}) 
+    response.status_code = 401 
+    return response 
+
+    
