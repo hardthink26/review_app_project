@@ -143,6 +143,20 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True 
 
+    def generate_auth_token(self): 
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'id': self.id}) 
+
+    @staticmethod
+    def verify_auth_token(token, expiration): 
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY']) 
+        try: 
+            data = s.loads(token, max_age=expiration) 
+        except BadData:
+            return None 
+        return User.query.get(data['id']) 
+            
+
     def __init__(self, **kwargs): 
         super(User, self).__init__(**kwargs)
         if self.role is None: 
