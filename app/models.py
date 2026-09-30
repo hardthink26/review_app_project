@@ -120,7 +120,7 @@ class User(UserMixin, db.Model):
     def password(self):
         raise AttributeError('password is not a readable attribute.')
 
-    @password.setter 
+    @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
