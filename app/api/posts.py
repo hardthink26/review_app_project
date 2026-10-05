@@ -1,13 +1,14 @@
-from . import api, ValidationError 
+from . import api
+from ..exceptions import ValidationError
 from ..models import Post, Permission
 from flask import request, g, jsonify, url_for, current_app
 from .. import db 
 from .errors import forbidden
-from ..decorators import permission_required
+from .decorators import permission_required
 
 
 @api.route('/posts', methods=['POST']) 
-@permission_required(Permission.WRITE)
+@permission_required(Permission.Edit)
 def new_post(): 
     post = Post.from_json(request.json) 
     post.author = g.current_user 

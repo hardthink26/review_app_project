@@ -299,6 +299,18 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
+    def to_json(self): 
+        json_post = {
+            'url' : url_for('api.get_post_comments', id=self.post_id),
+            'body' : self.body,
+            'body_html' : self.body_html,
+            'timestamp' : self.timestamp,
+            'disabled' : self.disabled,
+            'author_url' : url_for('api.get_user', id=self.author_id),
+            'post_url' : url_for('api.get_post', id=self.post_id)
+        }
+        return json_post
+
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags =set(['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
