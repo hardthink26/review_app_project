@@ -12,8 +12,6 @@ from sqlalchemy import event, select
 import nh3 
 
 
-
-
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -66,10 +64,6 @@ class Role(db.Model):
             db.session.add(role) 
         db.session.commit() 
             
-                
-
-
-
 
 class Permission():
     """define each roles and added to weight."""
@@ -84,7 +78,6 @@ class Follow(db.Model):
     follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) 
     timestamp = db.Column(db.DateTime, default=datetime.utcnow) 
-    
 
 
 class User(UserMixin, db.Model):
@@ -157,7 +150,6 @@ class User(UserMixin, db.Model):
             return None 
         return User.query.get(data['id']) 
             
-
     def __init__(self, **kwargs): 
         super(User, self).__init__(**kwargs)
         if self.role is None: 
