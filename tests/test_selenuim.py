@@ -85,10 +85,6 @@ class SeleniumTestCase(unittest.TestCase):
         self.assertTrue('Home' in title.text)
         print('테스트 성공: 관리자가 user_profile 페이지에 진입') 
 
-        
-
-            
-
     @classmethod
     def tearDownClass(cls): 
         cls.server.terminate()
