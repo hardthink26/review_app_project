@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash, abort, request, current_app, make_response
 from . import main 
 from flask_bootstrap import Bootstrap
+from flask_sqlalchemy.record_queries import get_recorded_queries 
 from .forms import  ReviewForm, EditProfile, EditProfileAdminForm, PostForm, CommentForm
 from .. import db
 from ..models import User, Problem, Role, Permission, Post, Comment 
@@ -239,3 +240,16 @@ def moderate_disabled(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+@main.after_app_request
+def after_request(response): 
+    for query in get_recorded_queries(): 
+        if query.duration >= current_app.config['FLASKY_SLOW_DB_QUERY_TIME']: 
+            current_app.logger.warning(
+                f"Slow query: {query.statement}, Parameters: {query.parameters}, Duration: {query.duration}, Location: {query.location}"
+            )
+    return response 
+
+
+
