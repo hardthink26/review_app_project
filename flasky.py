@@ -1,7 +1,7 @@
 import os
 import sys
 import click 
-from flask_migrate import Migrate 
+from flask_migrate import Migrate, upgrade 
 
 COV = None 
 if os.environ.get('FLASK_COVERAGE'): 
@@ -60,7 +60,19 @@ def profile(length, profile_dir):
                                       profile_dir=profile_dir)
     run_simple('127.0.0.1', 5000, app, use_reloader=False, use_debugger=False)
     
-    
+
+@app.cli.command("deploy") 
+def deploy(): 
+    """Run deployment tasks."""
+    #migrate database to latest revision 
+    upgrade() 
+
+    #create or update user roles 
+    Role.add_roles() 
+
+    #ensure all users are following themselves 
+    User.add_self_follow() 
+
 
 
 

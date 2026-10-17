@@ -21,9 +21,11 @@ class Config:
     def init_app(app):
         pass
 
+
 class DevelopmentConfig(Config):
     DEBUG = True 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///'+ os.path.join(basedir, 'data-dev.sqlite')
+
 
 class TestingConfig(Config):
     TESTING = True 
@@ -33,6 +35,52 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+
+    @classmethod
+    def init_app(cls, app): 
+        Config.init_app(app) 
+
+        #email errors to the administrators 
+        import logging
+        from logging.handlers import SMTPHandler
+        if app.debug:
+            return
+
+        required_settings = ['MAIL_SERVER', 'FLASKY_MAIL_SENDER', 'FLASKY_ADMIN']
+        if cls.MAIL_USERNAME:
+            required_settings.append('MAIL_PASSWORD')
+        missing_settings = [
+            name for name in required_settings
+            if not str(getattr(cls, name, None) or '').strip()
+        ]
+        if missing_settings:
+            raise ValueError(
+                'Production error email requires settings: '
+                + ', '.join(missing_settings)
+            )
+
+        credentials = None 
+        secure = None 
+        if getattr(cls, 'MAIL_USERNAME', None) is not None: 
+            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD) 
+            if getattr(cls, 'MAIL_USE_TLS', None): 
+                secure = () 
+        mail_handler = SMTPHandler(
+            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+            fromaddr=cls.FLASKY_MAIL_SENDER,
+            toaddrs=[cls.FLASKY_ADMIN],
+            subject=cls.FLASKY_MAIL_SUBJECT_PREFIX + ' Application Error',
+            credentials=credentials,
+            secure=secure,
+        ) 
+        mail_handler.setLevel(logging.ERROR) 
+        mail_handler.setFormatter(logging.Formatter(
+            '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+        )) 
+        app.logger.addHandler(mail_handler)
+            
+
+
 
 config = {
     'development' : DevelopmentConfig,
