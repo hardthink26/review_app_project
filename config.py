@@ -78,8 +78,6 @@ class ProductionConfig(Config):
             '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
         )) 
         app.logger.addHandler(mail_handler)
-            
-
 
 
 config = {

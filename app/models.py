@@ -223,7 +223,7 @@ class AnonymousUser(AnonymousUserMixin):
     def is_administrator(self):
         return False 
 
-        
+
 login_manager.anonymous_user = AnonymousUser
 
 
@@ -274,7 +274,6 @@ class Post(db.Model):
         return Post(body=body) 
             
         
-
 event.listen(Post.body, 'set', Post.on_changed_body) 
 
 @login_manager.user_loader

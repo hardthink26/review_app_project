@@ -17,3 +17,6 @@ __pycache__/
 data.sqlite
 
 data-dev.sqlite
+
+.pytest_cache/
+tmp/ 
