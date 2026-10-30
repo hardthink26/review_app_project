@@ -1,0 +1,15 @@
+services: 
+  review_app_project:
+    deploy: 
+      replicas : 1 
+    image: "my_review_app:latest"
+    build: .
+    ports: 
+      - "8000:5000"
+    env_file: .env
+    volumes: 
+      - myvol:/home/flasky/data 
+
+volumes: 
+  myvol: 
+    external: true 

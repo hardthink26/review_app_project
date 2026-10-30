@@ -9,5 +9,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . . 
 
-CMD ["gunicorn", "flasky:app", "--bind", "0.0.0.0:5000"] 
+CMD ["gunicorn", "flasky:app", "--bind", "0.0.0.0:5000"]  
+
 
