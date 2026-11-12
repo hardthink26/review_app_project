@@ -64,10 +64,21 @@ jobs:
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
     - name: test SSM connection
       run: | 
+        COMMAND_ID=$(
         aws ssm send-command \
         --instance-ids i-0e7fa2fce8cae9f5d \
         --document-name "AWS-RunShellScript" \
         --parameters 'commands=["whoami", "pwd"]' \
+        --region ap-southeast-2 \
+        --query 'Command.CommandId' \
+        --output text
+        )
+        echo "$COMMAND_ID" 
+        aws ssm wait command-executed \
+        --command-id "$COMMAND_ID" \
+        --instance-id i-0e7fa2fce8cae9f5d \
         --region ap-southeast-2 
+  
+  
         
       
