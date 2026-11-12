@@ -16,7 +16,7 @@ class BasicsTestCase(unittest.TestCase):
 
 
     def test_app_exists(self):
-        self.assertTrue(current_app is None)
+        self.assertFalse(current_app is None)
 
 
     def test_app_is_testing(self):
