@@ -62,5 +62,12 @@ jobs:
       run: |
         docker build --platform linux/amd64 -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+    - name: test SSM connection
+      run: | 
+        aws ssm send-command \
+        --instance-ids i-0e7fa2fce8cae9f5d \
+        --document-name "AWS-RunShellScript" \
+        --parameters 'commands=["whoami", "pwd"]' \
+        --region ap-southeast-2 
         
       
